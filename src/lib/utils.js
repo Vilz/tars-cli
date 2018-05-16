@@ -65,7 +65,7 @@ export default {
      * Gets TARS-config from TARS in current directory.
      * @return {Promise<object>} tars-config
      */
-    getTarsConfig() {
+    get tarsConfig() {
         const cwd = process.cwd();
         const initedStatus = this.isTarsInited();
 

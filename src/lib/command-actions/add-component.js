@@ -8,19 +8,22 @@ import tarsUtils from '../utils';
 import { ADD_COMPONENT } from '../constants';
 import getTemplaterExtension from './utils/get-templater-extension';
 
-const currentTarsVersion = tarsUtils.getTarsProjectVersion();
-const cwd = process.cwd();
-const tarsConfig = tarsUtils.getTarsConfig();
-const templater = tarsConfig.templater.toLowerCase();
-const cssPreprocessor = tarsConfig.cssPreprocessor.toLowerCase();
-// modules — fallback for old version of tars
-const componentsFolderName = tarsConfig.fs.componentsFolderName || 'modules';
+const cwd = process.cwd(),
+      currentTarsVersion = tarsUtils.tarsProjectVersion
 
-const extensions = {
-    tpl: getTemplaterExtension(templater),
-    css: cssPreprocessor === 'stylus' ? 'styl' : cssPreprocessor
-};
-let newComponentName;
+let newComponentName
+
+// const tarsConfig = tarsUtils.getTarsConfig();
+// const templater = tarsConfig.templater.toLowerCase();
+// const cssPreprocessor = tarsConfig.cssPreprocessor.toLowerCase();
+// const componentsFolderName = tarsConfig.fs.componentsFolderName || 'modules';
+
+// const extensions = {
+//     tpl: getTemplaterExtension(templater),
+//     css: cssPreprocessor === 'stylus' ? 'styl' : cssPreprocessor
+// };
+
+// TODO: resolve tarse config async load
 
 function actionsOnError(error, newComponentPath) {
     console.log('\n');
@@ -34,7 +37,7 @@ function getNewComponentPath(customPath) {
     let newComponentPath = `${cwd}/markup/${componentsFolderName}/`;
 
     // Path to new component. Includes component name
-    if (customPath && currentTarsVersion >= '1.8.0') {
+    if (customPath) {
         newComponentPath += `${customPath}/${newComponentName}`;
     } else {
         newComponentPath += newComponentName;
@@ -331,7 +334,7 @@ function createComponent(commandOptions) {
  * Create component with structure based on answers from promt
  * @param  {Object} answers Answers from promt
  */
-function createComponentWithPromt(answers) {
+async function createComponentWithPromt(answers) {
     // Path to new component. Includes component name
     const newComponentPath = getNewComponentPath(answers.customPath);
 
@@ -401,7 +404,24 @@ function createComponentWithPromt(answers) {
  * @param  {String} componentName The name of new component
  * @param  {Object} options       Inquirer options
  */
-export default function addComponent(componentName, options) {
+export default async function addComponent(componentName, options) {
+    const state = await (async function () {
+        const tarsConfig = await tarsUtils.tarsConfig,
+              templater = tarsConfig.templater.toLowerCase(),
+              cssPreprocessor = tarsConfig.cssPreprocessor.toLowerCase()
+
+        return {
+            tarsConfig,
+            templater,
+            cssPreprocessor,
+            componentsFolderName: tarsConfig.fs.componentsFolderName || 'modules',
+            extensions: {
+                tpl: getTemplaterExtension(templater),
+                css: cssPreprocessor === 'stylus' ? 'styl' : cssPreprocessor
+            }
+        }
+    })()
+
     console.log('\n');
 
     const validateResult = tarsUtils.validateFolderName(componentName);

@@ -3,11 +3,12 @@ import fs from 'fs';
 import tarsUtils from '../../../utils';
 import { execSync } from 'child_process';
 import { importJSON } from '../../../utils';
-const babelConfigPath = `${process.cwd()}/.babelrc`;
-const currentTarsConfig = tarsUtils.getTarsConfig();
-const projectPackageJson = importJSON(`${process.cwd()}/package.json`);
 
-export default function updateBabelConfig() {
+export default async function updateBabelConfig() {
+    const babelConfigPath = `${process.cwd()}/.babelrc`;
+    const currentTarsConfig = await tarsUtils.tarsConfig;
+    const projectPackageJson = importJSON(`${process.cwd()}/package.json`);
+
     let babelConfig;
     let newBabelConfig = {
         presets: ['es2015'],

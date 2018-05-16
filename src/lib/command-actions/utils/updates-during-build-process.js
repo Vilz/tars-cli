@@ -8,7 +8,7 @@ export default async function updatesDuringBuildProcess() {
     (await import('./update-project/update-babelrc').default);
 
     const eslintrcPath = cwd + '/.eslintrc';
-    const tarsConfig = tarsUtils.getTarsConfig();
+    const tarsConfig = await tarsUtils.tarsConfig;
     let currentEslintConfigContent;
     let newEslintConfig;
 

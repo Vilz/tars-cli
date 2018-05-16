@@ -11,9 +11,9 @@ import getTemplaterExtension from './utils/get-templater-extension';
  * @param  {String} pageName   The name of new page
  * @param  {Object} opts       Options
  */
-export default function addPage(pageName, opts) {
+export default async function addPage(pageName, opts) {
     const cwd = process.cwd();
-    const tarsConfig = tarsUtils.getTarsConfig();
+    const tarsConfig = await tarsUtils.tarsConfig;
     const templater = tarsConfig.templater.toLowerCase();
     let extension = getTemplaterExtension(templater);
     // Path to new page. Includes page name
