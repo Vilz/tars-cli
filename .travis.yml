@@ -6,6 +6,7 @@ os:
 
 env:
   matrix:
+    - export NODE_VERSION="10"
     - export NODE_VERSION="9"
     - export NODE_VERSION="8"
     - export NODE_VERSION="7"
@@ -24,7 +25,7 @@ before_install:
 before_script:
   - if [ ${NODE_VERSION} = "6" ]; then npm install -g npm; fi
   - npm -v
-  - 'npm install -g git://github.com/tars/tars-cli.git#${TRAVIS_COMMIT}'
+  - 'npm install -g https://github.com/tars/tars-cli/archive/${TRAVIS_COMMIT}.tar.gz'
 
 script:
   - tars --version
