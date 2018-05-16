@@ -220,7 +220,7 @@ tars add-component sidebar -s custom_scheme --custom-path example
 
 ## tars add-page %pageName%
 
-This command adds a new page in the markup/pages. It takes the name of the page as a parameter . An error will be thrown in case the page already exists. It is possible to add an empty page  and copy of the template page. If there is an extension in pageName, new page will be created from _template page with the same extension. Otherwise, the default extension for current templater will be used: .jade for Jade and .html for Handlebars.
+This command adds a new page in the markup/pages. It takes the name of the page as a parameter . An error will be thrown in case the page already exists. It is possible to add an empty page  and copy of the template page. If there is an extension in pageName, new page will be created from _template page with the same extension. Otherwise, the default extension for current templater will be used: .pug for Pug and .html for Handlebars.
 
 Interactive mode is not available.
 
@@ -231,7 +231,7 @@ Interactive mode is not available.
 ### An example of using the command
 
 ````bash
-# Will be created an inner page.{Html, jade} based _template.{Html, jade}
+# Will be created an inner page.{Html, pug} based _template.{Html, pug}
 tars add-page inner
 
 # Will be created an inner.html page based on _template.html
@@ -267,7 +267,7 @@ Update the current version of TARS in current project to the latest available. *
 
 * `-f`, `--force`: update won't be started if current version of TARS in your project is the latest. But you can override it by using that flag.
 * `-s`, `--source`: you can update your current project with any TARS archive like in [tars init](#tars-init).
-* `--exclude-html`: _template.{html,hbs,jade} will be updated by default, but you can prevent with behaviour, by using that flag.
+* `--exclude-html`: _template.{html,hbs,pug} will be updated by default, but you can prevent with behaviour, by using that flag.
 * `--exclude-css`: sprite-templates will be updated by default, but you can prevent with behaviour, by using that flag.
 
 `--exclude-html` and `--exclude-css` can be useful in case of updating from custom source.

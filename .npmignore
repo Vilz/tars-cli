@@ -6,3 +6,6 @@ coverage
 *.orig
 .idea
 test/*
+docs/*
+
+src/*
