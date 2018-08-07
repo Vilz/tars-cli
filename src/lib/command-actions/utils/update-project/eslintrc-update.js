@@ -41,4 +41,4 @@ export default function updateEslintrc(currentEslintConfig) {
     );
 
     return newEslintConfig;
-};
+}

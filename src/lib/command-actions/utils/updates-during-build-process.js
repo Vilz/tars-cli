@@ -1,5 +1,3 @@
-
-
 import fs from 'fs';
 import tarsUtils from '../../utils';
 
@@ -33,4 +31,4 @@ export default async function updatesDuringBuildProcess() {
             }
         }
     }
-};
+}

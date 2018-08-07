@@ -1,5 +1,3 @@
-
-
 import chalk from 'chalk';
 import runCommand from './utils/run-command';
 import { execSync } from 'child_process';
@@ -14,4 +12,4 @@ export default function update() {
     tarsUtils.tarsSay('Make a cup of tea/coffee, while it is working :)');
     execSync('npm cache clean');
     runCommand('npm', ['update', '-g', 'tars-cli']);
-};
+}

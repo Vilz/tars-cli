@@ -1,5 +1,3 @@
-
-
 import Download from 'download';
 import { exec } from 'child_process';
 import fsExtra from 'fs-extra';
@@ -737,4 +735,4 @@ export default function updateProject(options) {
                     console.error(downloadError.stack);
                 });
         });
-};
+}

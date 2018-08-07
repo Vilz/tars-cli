@@ -22,7 +22,8 @@ export default async function saveConfigAnswers(answers) {
         fs: {
             staticFolderName: answers.staticFolderName,
             imagesFolderName: answers.imagesFolderName,
-            componentsFolderName: answers.componentsFolderName
+            componentsFolderName: answers.componentsFolderName,
+            pagesFolderName: answers.pagesFolderName,
         }
     });
 
@@ -45,4 +46,4 @@ export default async function saveConfigAnswers(answers) {
     const newConfigFileContent = `module.exports = ${JSON.stringify(newConfig, null, 4)};`;
 
     fs.writeFileSync(`${cwd}/tars-config.js`, newConfigFileContent);
-};
+}

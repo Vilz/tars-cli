@@ -124,5 +124,4 @@ export default function updateTarsConfig(params) {
     }
 
     return newTarsConfig;
-};
-
+}

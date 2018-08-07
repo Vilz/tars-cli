@@ -1,5 +1,3 @@
-
-
 import path from 'path';
 import spawn from 'win-spawn';
 import tarsUtils from '../../utils';
@@ -17,4 +15,4 @@ export default function runCommand(commandName, commandOptions) {
 
     tarsUtils.spinner.stop(true);
     spawn(commandName, commandOptions, { stdio: 'inherit' });
-};
+}

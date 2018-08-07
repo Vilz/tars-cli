@@ -162,7 +162,7 @@ program
 
 if (program.version && args.length && (args[0] === '--version' || args[0] === '-v')) {
     import('../lib/command-actions/get-version')
-        .then(module => module.default())
+        .then(module => module.default());
 }
 
 if (!args.length) {

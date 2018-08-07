@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import tarsUtils from '../utils';
-import Download from 'download';
-import Utils, { importJSON } from '../utils'
+import download from 'download';
+import Utils from '../utils';
 
 /**
  * Get version of tars-cli
@@ -17,21 +17,21 @@ export default function getVersion() {
 
     (async () => {
         try {
-            const lastPackageJson = await Download('https://raw.githubusercontent.com/tars/tars-cli/master/package.json')
+            const lastPackageJson = await download('https://raw.githubusercontent.com/tars/tars-cli/master/package.json');
             const latestTarsCliVersion = JSON.parse(lastPackageJson).version;
 
             if (tarsVersion < latestTarsCliVersion) {
                 tarsUtils.tarsSay(
                     `Update available for TARS-CLI! New version is: "${chalk.cyan.bold(latestTarsCliVersion)}"`,
-                    true
+                    true,
                 );
                 tarsUtils.tarsSay(
                     `Run the command "${chalk.cyan.bold('tars update')}" to update TARS-CLI. \n`,
-                    true
+                    true,
                 );
             }
         } catch (error) {
-            console.error('Can\'t fetch latest version from server')
+            console.error('Can\'t fetch latest version from server');
         }
-    })()
-};
+    })();
+}

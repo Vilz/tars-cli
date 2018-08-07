@@ -1,5 +1,3 @@
-
-
 import chalk from 'chalk';
 import runCommand from './utils/run-command';
 import tarsUtils from '../utils';
@@ -24,4 +22,4 @@ export default function startTask(taskName, options) {
     tarsUtils.tarsSay('Please wait for a moment, while I\'m preparing builder for working...\n');
 
     runCommand('gulp', commandOptions);
-};
+}

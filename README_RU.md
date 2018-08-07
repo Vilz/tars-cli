@@ -44,7 +44,7 @@ npm i -g npm
 Начните свой проект с помощью:
 
 ```bash
-tars init
+tars init -s https://github.com/SergeShkurko/tars/archive/next.zip
 ```
 
 ## Команды TARS-CLI

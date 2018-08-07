@@ -1,18 +1,4 @@
-import tarsUtils from './utils';
-
 export const GENERAL_BUILD_OPTIONS = {
-    'ie9': {
-        flag: '--ie9',
-        title: ' IE9 maintenance'
-    },
-    'ie8': {
-        flag: '--ie8',
-        title: ' IE8 maintenance'
-    },
-    'ie': {
-        flag: '--ie',
-        title: ' IE8 and IE9 maintenance'
-    },
     'customFlags': {
         flag: '--customFlags',
         title: ' Custom flags'
@@ -23,35 +9,29 @@ export const GENERAL_BUILD_OPTIONS = {
  * Constats for build promt and processing
  * @type {Object}
  */
-export const BUILD = Object.assign(
-    {},
-    {
-        'release': {
-            flag: '--release',
-            title: ' Release mode'
-        },
-        'min': {
-            flag: '--min',
-            title: ' Minify files only'
-        }
+export const BUILD = {
+    'release': {
+        flag: '--release',
+        title: ' Release mode'
     },
-    GENERAL_BUILD_OPTIONS
-);
+    'min': {
+        flag: '--min',
+        title: ' Minify files only'
+    },
+    ...GENERAL_BUILD_OPTIONS
+};
 
-export const DEV = Object.assign(
-    {},
-    {
-        'livereload': {
-            flag: '--lr',
-            title: ' Start server for livereload'
-        },
-        'tunnel': {
-            flag: '--tunnel',
-            title: ' Start server for tunnel and livereload'
-        }
+export const DEV = {
+    'livereload': {
+        flag: '--lr',
+        title: ' Start server for livereload'
     },
-    GENERAL_BUILD_OPTIONS
-);
+    'tunnel': {
+        flag: '--tunnel',
+        title: ' Start server for tunnel and livereload'
+    },
+    ...GENERAL_BUILD_OPTIONS
+};
 
 export const ADD_COMPONENT = {
     basic: {
@@ -62,9 +42,6 @@ export const ADD_COMPONENT = {
     },
     data: {
         title: ' Data dir'
-    },
-    ie: {
-        title: ' IE dir'
     },
     full: {
         title: ' Full pack (all available folders and files)'

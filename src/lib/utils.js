@@ -1,10 +1,11 @@
 import chalk from 'chalk';
-import path from 'path';
 import os from 'os';
-import fs from 'fs'
-import CLISpinner from 'cli-spinner';
+import fs from 'fs';
+import {
+    Spinner
+} from 'cli-spinner';
 
-const spinner = new CLISpinner.Spinner('%s');
+const spinner = new Spinner('%s');
 
 /**
  * Check operation system name
@@ -27,6 +28,28 @@ spinner.restart = function restart() {
     this.stop(true);
     this.start();
 };
+
+export function importJSON(filePath, encoding = 'utf8') {
+    if (!fs.existsSync(filePath)) {
+        throw Error('Cannot find file');
+    }
+    return JSON.parse(fs.readFileSync(filePath, {
+        encoding
+    }));
+}
+
+export function writeFiles(path, files) {
+    files.map(file => {
+        try {
+            fs.writeFileSync(
+                `${path}/${file.name}`,
+                file.content
+            );
+        } catch (error) {
+            throw new Error(error);
+        }
+    });
+}
 
 export default {
 
@@ -66,8 +89,8 @@ export default {
      * @return {Promise<object>} tars-config
      */
     get tarsConfig() {
-        const cwd = process.cwd();
-        const initedStatus = this.isTarsInited();
+        const cwd = process.cwd(),
+            initedStatus = this.isTarsInited();
 
         if (initedStatus.inited && !initedStatus.error) {
             return import(`${cwd}/tars-config`);
@@ -80,7 +103,7 @@ export default {
     },
 
     get tarsVersion() {
-        return importJSON(`${process.env.cliRoot}/package.json`).version
+        return importJSON(`${process.env.cliRoot}/package.json`).version;
     },
 
     get tarsProjectVersion() {
@@ -97,7 +120,7 @@ export default {
     /**
      * Output messages from TARS
      * @param  {String}  message Message to output
-     * @param  {Boolean} Stopspinner or restart it
+     * @param  {Boolean} stopSpinner or restart it
      */
     tarsSay(message, stopSpinner) {
 
@@ -117,7 +140,6 @@ export default {
 
     /**
      * Actions, then TARS is not inited
-     * @return {[type]} [description]
      */
     tarsNotInitedActions() {
         console.log('\n');
@@ -127,8 +149,8 @@ export default {
 
     /**
      * Validate folder name
-     * @param  {String}                     Value Recieved folder name
-     * @return {Boolean || String}          True or error text (not consistent, because of inquirer va)
+     * @param  {String}          value Recieved folder name
+     * @return {String}          True or error text (not consistent, because of inquirer va)
      */
     validateFolderName(value) {
         const pass = /[?<>:*|"\\]/.test(value);
@@ -142,7 +164,7 @@ export default {
 
     /**
      * Extract only used flags from inquirer options
-     * @param  {Object} Inquirer options
+     * @param  {Object} inquirerOptions options
      * @return {Array}
      */
     getUsedFlags(inquirerOptions) {
@@ -164,8 +186,3 @@ export default {
      */
     isWindows
 };
-
-export function importJSON(filePath, encoding = 'utf8') {
-    if (!fs.existsSync(filePath)) throw Error('Cannot find file')
-    return JSON.parse(fs.readFileSync(filePath, { encoding }));
-}

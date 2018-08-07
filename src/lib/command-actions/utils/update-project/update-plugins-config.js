@@ -35,6 +35,6 @@ export default function updatePluginsConfig(downloadedPluginsConfigString, curre
     );
 
     return commentJson.stringify(parsedPluginsConfig, null, 4);
-};
+}
 
 

@@ -1,4 +1,4 @@
-import path from 'path'
+import path from 'path';
 import chalk from 'chalk';
 import inquirer from 'inquirer';
 import tarsUtils from '../utils';
@@ -113,6 +113,12 @@ export default function promt(callback) {
             message: 'Enter components folder name',
             default: () => 'components',
             validate: tarsUtils.validateFolderName
+        }, {
+            type: 'input',
+            name: 'pagesFolderName',
+            message: 'Enter pages folder name',
+            default: () => 'pages',
+            validate: tarsUtils.validateFolderName
         }
     );
 
@@ -123,4 +129,4 @@ export default function promt(callback) {
         tarsUtils.tarsSay('You can change all options in tars-config.js\n');
         callback(answers);
     });
-};
+}

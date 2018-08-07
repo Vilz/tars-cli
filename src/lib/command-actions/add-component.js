@@ -5,25 +5,21 @@ import chalk from 'chalk';
 import del from 'del';
 import addComponentPromt from '../promt/add-component-promt';
 import tarsUtils from '../utils';
-import { ADD_COMPONENT } from '../constants';
+import {
+    ADD_COMPONENT,
+} from '../constants';
 import getTemplaterExtension from './utils/get-templater-extension';
+import Scheme from './add-component/scheme';
+import {
+    generateBaseFiles,
+    createAssetsFolder,
+    createDataFolder,
+    generateComponent,
+} from './add-component/generate';
 
-const cwd = process.cwd(),
-      currentTarsVersion = tarsUtils.tarsProjectVersion
+const cwd = process.cwd();
 
-let newComponentName
-
-// const tarsConfig = tarsUtils.getTarsConfig();
-// const templater = tarsConfig.templater.toLowerCase();
-// const cssPreprocessor = tarsConfig.cssPreprocessor.toLowerCase();
-// const componentsFolderName = tarsConfig.fs.componentsFolderName || 'modules';
-
-// const extensions = {
-//     tpl: getTemplaterExtension(templater),
-//     css: cssPreprocessor === 'stylus' ? 'styl' : cssPreprocessor
-// };
-
-// TODO: resolve tarse config async load
+let newComponentName;
 
 function actionsOnError(error, newComponentPath) {
     console.log('\n');
@@ -33,17 +29,11 @@ function actionsOnError(error, newComponentPath) {
     console.error(error.stack);
 }
 
-function getNewComponentPath(customPath) {
-    let newComponentPath = `${cwd}/markup/${componentsFolderName}/`;
-
-    // Path to new component. Includes component name
-    if (customPath) {
-        newComponentPath += `${customPath}/${newComponentName}`;
-    } else {
-        newComponentPath += newComponentName;
-    }
-
-    return newComponentPath;
+function getNewComponentPath(componentsFolderName, customPath) {
+    return `${cwd}/markup/${componentsFolderName}/${ customPath
+        ? `${customPath}/${newComponentName}`
+        : newComponentName
+    }`;
 }
 
 function isComponentExist(newComponentPath) {
@@ -58,69 +48,7 @@ function isComponentExist(newComponentPath) {
     return true;
 }
 
-/**
- * Generate base files for component. Js, Html and Css file
- * @param {String} newComponentPath Path to new component
- */
-function generateBaseFiles(newComponentPath) {
-    const newComponentFolder = `${newComponentPath}/${newComponentName}`;
-
-    fs.appendFileSync(`${newComponentFolder}.${extensions.css}`, '\n');
-    fs.appendFileSync(`${newComponentFolder}.js`, '\n');
-    fs.appendFileSync(`${newComponentFolder}.${extensions.tpl}`, '\n');
-
-    if (extensions.tpl === 'pug') {
-        fs.writeFileSync(
-            `${newComponentFolder}.${extensions.tpl}`,
-            `mixin ${newComponentName}(data)\n    .${newComponentName}`
-        );
-    }
-}
-
-/**
- * Create folder for IE's stylies
- * @param {String} newComponentPath Path to new component
- */
-function createIEFolder(newComponentPath) {
-    fs.mkdirSync(newComponentPath + '/ie');
-}
-
-/**
- * Create folder for assets
- * @param {String} newComponentPath Path to new component
- */
-function createAssetsFolder(newComponentPath) {
-    fs.mkdirSync(newComponentPath + '/assets');
-}
-
-/**
- * Create folder for data
- * @param {String} newComponentPath Path to new component
- */
-function createDataFolder(newComponentPath) {
-    let processedComponentName = newComponentName;
-    let dataFileContent = '';
-
-    if (processedComponentName.indexOf('-') > -1) {
-        processedComponentName = '\'' + processedComponentName + '\'';
-    }
-
-    if (tarsUtils.getTarsProjectVersion() >= '1.6.0') {
-        dataFileContent = `var data = {${processedComponentName}: {}};`;
-    } else {
-        dataFileContent = `${processedComponentName}: {}`;
-    }
-
-    fs.mkdirSync(newComponentPath + '/data');
-    fs.appendFileSync(newComponentPath + '/data/data.js', '\n');
-
-    fs.writeFileSync(
-        newComponentPath + '/data/data.js',
-        dataFileContent
-    );
-}
-
-function successLog(customPath) {
+function successLog(componentsFolderName, customPath) {
     let newComponentPath = `markup/${componentsFolderName}`;
 
     if (customPath) {
@@ -130,9 +58,8 @@ function successLog(customPath) {
     tarsUtils.tarsSay(chalk.green(`Component "${newComponentName}" has been added to ${newComponentPath}.\n`), true);
 }
 
-function createCopyOfTemplate(newComponentPath, customPath) {
+function createCopyOfTemplate(componentsFolderName, newComponentPath, customPath) {
     fsExtra.copy(`${cwd}/markup/${componentsFolderName}/_template`, newComponentPath, error => {
-
         if (error) {
             tarsUtils.tarsSay(
                 chalk.red(`_template component does not exist in the "markup/${componentsFolderName}" directory.`)
@@ -145,136 +72,58 @@ function createCopyOfTemplate(newComponentPath, customPath) {
                 true
             );
         } else {
-            successLog(customPath);
+            successLog(componentsFolderName, customPath);
         }
     });
 }
 
-function createComponentByScheme(newComponentPath, params) {
-    params = params || {};
-
-    function parseScheme(schemeConfig) {
-        return new Promise(resolve => {
-            const stringifiedConfig = JSON.stringify(schemeConfig);
-            const processedConfig = stringifiedConfig
-                .replace(/__componentName__/g, newComponentName)
-                .replace(/__templateExtension__/g, extensions.tpl)
-                .replace(/__cssExtension__/g, extensions.css);
-
-
-            const processedConfigObject = JSON.parse(processedConfig);
-            resolve(processedConfigObject);
-        });
-    }
-
-    function loadSchemeFile() {
-        return new Promise((resolve, reject) => {
-            let schemeFilePath = `${cwd}/markup/${tarsConfig.fs.componentsFolderName}/${params.schemeFile}`;
-
-            if (schemeFilePath.indexOf('.json') === -1) {
-                schemeFilePath += '.json';
-            }
-
-            fsExtra.readJson(schemeFilePath, (error, schemeConfig) => {
-                if (error) {
-                    return reject(error);
-                }
-
-                resolve(schemeConfig);
-            });
-        });
-    }
-
-    function writeFiles(path, files) {
-        files.map(file => {
-            try {
-                fs.writeFileSync(
-                    `${path}/${file.name}`,
-                    file.content
-                );
-            } catch (error) {
-                throw new Error(error);
-            }
-        });
-    }
-
-    function processFolders(path, folders) {
-        folders.map(folder => {
-            const folderPath = `${path}/${folder.name}`;
-            const folderFiles = folder.files;
-            const folderFolders = folder.folders;
-
-            mkdirp.sync(folderPath);
-
-            if (folderFiles && folderFiles.length) {
-                writeFiles(folderPath, folderFiles);
-            }
-
-            if (folderFolders && folderFolders.length) {
-                processFolders(folderPath, folderFolders);
-            }
-        });
-    }
-
-    function generateComponent(scheme) {
-        return new Promise((resolve, reject) => {
-            const initialFolders = scheme.folders;
-            const initialFiles = scheme.files;
-
-            mkdirp(newComponentPath, error => {
-                if (error) {
-                    return reject(error);
-                }
-
-                try {
-                    if (initialFiles && initialFiles.length) {
-                        writeFiles(newComponentPath, initialFiles);
-                    }
-
-                    if (initialFolders && initialFolders.length) {
-                        processFolders(newComponentPath, initialFolders);
-                    }
-                } catch (generationError) {
-                    return reject(generationError);
-                }
-
-                resolve();
-            });
-        });
-    }
+function createComponentByScheme(state, newComponentPath, params = {}) {
+    const {
+        tarsConfig,
+        templater,
+        cssPreprocessor,
+        componentsFolderName,
+    } = state;
+    const schemeFilePath = `${cwd}/markup/${tarsConfig.fs.componentsFolderName}/${params.schemeFile}`;
+    const scheme = new Scheme(schemeFilePath, newComponentPath, templater, cssPreprocessor);
 
     Promise.resolve()
-        .then(loadSchemeFile)
-        .then(parseScheme)
-        .then(generateComponent)
-        .then(() => {
-            successLog(params.customPath);
-        })
-        .catch(error => {
-            actionsOnError(error, newComponentPath);
-        });
+        .then(scheme.loadSchemeFile)
+        .then(scheme.parseScheme)
+        .then(componentScheme => generateComponent(newComponentPath, componentScheme))
+        .then(() =>
+            successLog(componentsFolderName, params.customPath)
+        )
+        .catch(error =>
+            actionsOnError(error, newComponentPath)
+        );
 }
 
 /**
  * Create component with structure based on command options
+ * @param {Object} state All params
  * @param {Object} commandOptions Options, which is passed from CLI
  */
-function createComponent(commandOptions) {
+function createComponent(state, commandOptions) {
+    const {
+        componentsFolderName,
+        extensions
+    } = state;
     // Path to new component. Includes component name
-    const newComponentPath = getNewComponentPath(commandOptions.customPath);
+    const newComponentPath = getNewComponentPath(componentsFolderName, commandOptions.customPath);
 
     if (isComponentExist(newComponentPath)) {
         return;
     }
 
-    if (commandOptions.scheme && currentTarsVersion >= '1.8.0') {
+    if (commandOptions.scheme) {
         if (commandOptions.scheme && typeof commandOptions.scheme === 'boolean') {
             commandOptions.scheme = '';
         }
 
         createComponentByScheme(
-            newComponentPath,
-            {
+            state,
+            newComponentPath, {
                 schemeFile: commandOptions.scheme || 'default_component_scheme.json',
                 customPath: commandOptions.customPath
             }
@@ -283,7 +132,7 @@ function createComponent(commandOptions) {
     }
 
     if (commandOptions.template) {
-        createCopyOfTemplate(newComponentPath, commandOptions.customPath);
+        createCopyOfTemplate(componentsFolderName, newComponentPath, commandOptions.customPath);
         return;
     }
 
@@ -300,15 +149,14 @@ function createComponent(commandOptions) {
             }
 
             if (commandOptions.full && generateStructure) {
-                generateBaseFiles(newComponentPath);
-                createIEFolder(newComponentPath);
+                generateBaseFiles(extensions, newComponentPath, newComponentName);
                 createAssetsFolder(newComponentPath);
-                createDataFolder(newComponentPath);
+                createDataFolder(newComponentPath, newComponentName);
                 generateStructure = false;
             }
 
             if (commandOptions.basic && generateStructure) {
-                generateBaseFiles(newComponentPath);
+                generateBaseFiles(extensions, newComponentPath, newComponentName);
             }
 
             if (commandOptions.assets && generateStructure) {
@@ -316,27 +164,31 @@ function createComponent(commandOptions) {
             }
 
             if (commandOptions.data && generateStructure) {
-                createDataFolder(newComponentPath);
-            }
-
-            if (commandOptions.ie && generateStructure) {
-                createIEFolder(newComponentPath);
+                createDataFolder(newComponentPath, newComponentName);
             }
         } catch (generationError) {
             return actionsOnError(generationError, newComponentPath);
         }
 
-        successLog(commandOptions.customPath);
+        successLog(componentsFolderName, commandOptions.customPath);
     });
 }
 
 /**
  * Create component with structure based on answers from promt
+ * @param  {Object} state All params
  * @param  {Object} answers Answers from promt
+ * @return {void}
  */
-async function createComponentWithPromt(answers) {
+async function createComponentWithPromt(state, answers) {
+    // FIXME: remove
+    // console.log('\x1b[31m', answers, '\x1b[0m');
+    const {
+        componentsFolderName,
+        extensions
+    } = state;
     // Path to new component. Includes component name
-    const newComponentPath = getNewComponentPath(answers.customPath);
+    const newComponentPath = getNewComponentPath(componentsFolderName, answers.customPath);
 
     if (isComponentExist(newComponentPath)) {
         return;
@@ -344,8 +196,8 @@ async function createComponentWithPromt(answers) {
 
     if (answers.mode.indexOf(ADD_COMPONENT.scheme.title) > -1) {
         createComponentByScheme(
-            newComponentPath,
-            {
+            state,
+            newComponentPath, {
                 schemeFile: answers.scheme,
                 customPath: answers.customPath
             }
@@ -354,8 +206,8 @@ async function createComponentWithPromt(answers) {
     }
 
     if (answers.mode.indexOf(ADD_COMPONENT.template.title) > -1) {
-        createCopyOfTemplate(newComponentPath);
-        return successLog(answers.customPath);
+        createCopyOfTemplate(componentsFolderName, newComponentPath);
+        return successLog(componentsFolderName, answers.customPath);
     }
 
     mkdirp(newComponentPath, error => {
@@ -367,10 +219,9 @@ async function createComponentWithPromt(answers) {
             if (answers.mode.indexOf(ADD_COMPONENT.empty.title) > -1) {
                 void 0;
             } else if (answers.mode.indexOf(ADD_COMPONENT.full.title) > -1) {
-                generateBaseFiles(newComponentPath);
-                createIEFolder(newComponentPath);
+                generateBaseFiles(extensions, newComponentPath, newComponentName);
                 createAssetsFolder(newComponentPath);
-                createDataFolder(newComponentPath);
+                createDataFolder(newComponentPath, newComponentName);
             } else {
                 answers.mode.forEach(mode => {
                     console.log(mode);
@@ -378,15 +229,12 @@ async function createComponentWithPromt(answers) {
                         case ADD_COMPONENT.assets.title:
                             createAssetsFolder(newComponentPath);
                             break;
-                        case ADD_COMPONENT.ie.title:
-                            createIEFolder(newComponentPath);
-                            break;
                         case ADD_COMPONENT.data.title:
-                            createDataFolder(newComponentPath);
+                            createDataFolder(newComponentPath, newComponentName);
                             break;
                         case ADD_COMPONENT.basic.title:
                         default:
-                            generateBaseFiles(newComponentPath);
+                            generateBaseFiles(extensions, newComponentPath, newComponentName);
                             break;
                     }
                 });
@@ -395,7 +243,7 @@ async function createComponentWithPromt(answers) {
             return actionsOnError(generationError, newComponentPath);
         }
 
-        return successLog(answers.customPath);
+        return successLog(componentsFolderName, answers.customPath);
     });
 }
 
@@ -405,22 +253,20 @@ async function createComponentWithPromt(answers) {
  * @param  {Object} options       Inquirer options
  */
 export default async function addComponent(componentName, options) {
-    const state = await (async function () {
-        const tarsConfig = await tarsUtils.tarsConfig,
-              templater = tarsConfig.templater.toLowerCase(),
-              cssPreprocessor = tarsConfig.cssPreprocessor.toLowerCase()
+    const tarsConfig = await tarsUtils.tarsConfig,
+        templater = tarsConfig.templater.toLowerCase(),
+        cssPreprocessor = tarsConfig.cssPreprocessor.toLowerCase();
 
-        return {
-            tarsConfig,
-            templater,
-            cssPreprocessor,
-            componentsFolderName: tarsConfig.fs.componentsFolderName || 'modules',
-            extensions: {
-                tpl: getTemplaterExtension(templater),
-                css: cssPreprocessor === 'stylus' ? 'styl' : cssPreprocessor
-            }
+    const state = {
+        tarsConfig,
+        templater,
+        cssPreprocessor,
+        componentsFolderName: tarsConfig.fs.componentsFolderName || 'modules',
+        extensions: {
+            tpl: getTemplaterExtension(templater),
+            css: cssPreprocessor === 'stylus' ? 'styl' : cssPreprocessor
         }
-    })()
+    };
 
     console.log('\n');
 
@@ -436,8 +282,8 @@ export default async function addComponent(componentName, options) {
     const commandOptions = Object.assign({}, options);
 
     if (tarsUtils.getUsedFlags(commandOptions).length) {
-        createComponent(commandOptions);
+        createComponent(state, commandOptions);
     } else {
-        addComponentPromt(createComponentWithPromt);
+        addComponentPromt((answers) => createComponentWithPromt(state, answers));
     }
-};
+}

@@ -62,4 +62,4 @@ export default function updatePackageJson(destPath) {
     newPackageJson = mergePackageJson(newPackageJson, newUserPackageJson);
 
     return newPackageJson;
-};
+}

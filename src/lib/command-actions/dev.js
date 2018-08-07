@@ -19,15 +19,6 @@ function extractBuildOptionsFromPromt(answers) {
             case DEV.tunnel.title:
                 buildOptions.push(DEV.tunnel.flag);
                 break;
-            case DEV.ie9.title:
-                buildOptions.push(DEV.ie9.flag);
-                break;
-            case DEV.ie8.title:
-                buildOptions.push(DEV.ie8.flag);
-                break;
-            case DEV.ie.title:
-                buildOptions.push(DEV.ie.flag);
-                break;
             case DEV.customFlags.title:
                 buildOptions = buildOptions.concat(answers.customFlags);
                 break;
@@ -70,6 +61,7 @@ function extractBuildOptionsFromFlags(commandOptions) {
 /**
  * Get options for dev task and start dev task in TARS
  * @param  {Object} answers Answers from promt
+ * @param {Object} commandOptions Options
  */
 function devInit(answers, commandOptions) {
     let buildOptions = answers ? extractBuildOptionsFromPromt(answers) : extractBuildOptionsFromFlags(commandOptions);
@@ -105,4 +97,4 @@ export default function dev(options) {
         tarsUtils.tarsSay('Please, answer some questions:');
         devPromt(devInit);
     }
-};
+}

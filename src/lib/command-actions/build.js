@@ -19,15 +19,6 @@ function extractBuildOptionsFromPromt(answers) {
             case BUILD.min.title:
                 buildOptions.push(BUILD.min.flag);
                 break;
-            case BUILD.ie9.title:
-                buildOptions.push(BUILD.ie9.flag);
-                break;
-            case BUILD.ie8.title:
-                buildOptions.push(BUILD.ie8.flag);
-                break;
-            case BUILD.ie.title:
-                buildOptions.push(BUILD.ie.flag);
-                break;
             case BUILD.customFlags.title:
                 buildOptions = buildOptions.concat(answers.customFlags);
                 break;
@@ -69,7 +60,7 @@ function extractBuildOptionsFromFlags(commandOptions) {
 /**
  * Get options for build task and start build task in TARS
  * @param  {Object} answers Answers from promt
- * @param  {Object} options from inquirer
+ * @param  {Object} commandOptions from inquirer
  */
 function buildInit(answers, commandOptions) {
     const buildOptions = answers ? extractBuildOptionsFromPromt(answers) : extractBuildOptionsFromFlags(commandOptions);
@@ -103,4 +94,4 @@ export default function build(options) {
         tarsUtils.tarsSay('Please, answer some questions:');
         buildPromt(buildInit);
     }
-};
+}

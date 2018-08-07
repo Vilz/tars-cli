@@ -1,6 +1,6 @@
 
 
-import Download from 'download';
+import download from 'download';
 import { exec } from 'child_process';
 import extfs from 'extfs';
 import del from 'del';
@@ -13,7 +13,7 @@ import fsPromt from '../promt/fs-promt';
 import saveConfigAnswers from '../promt/save-config-answers';
 import { importJSON } from '../utils';
 let tarsZipUrl = 'https://github.com/tars/tars/archive/master.zip';
-let commandOptions = {};
+let commandOptions;
 
 /**
  * Main init funciton, download all additional tasks.
@@ -25,11 +25,11 @@ async function mainInit(answers) {
     tarsUtils.tarsSay('Please, wait for a moment, while magic is happening...');
 
     try {
-        const downloadTars = await Download(tarsZipUrl, cwd, {
+        await download(tarsZipUrl, cwd, {
             mode: '755',
             extract: true,
             strip: 1
-        })
+        });
 
         let commandToExec = 'npm i';
 
@@ -66,7 +66,7 @@ async function mainInit(answers) {
         const tarsConfig = await import(`${cwd}/tars-config.js`);
 
         if ((answers && answers.useBabel) || tarsConfig.useBabel) {
-            commandToExec += ' && npm i babel-preset-es2015 --save';
+            commandToExec += ' && npm i babel-preset-env --save';
         }
 
         exec(commandToExec, (error, stdout, stderr) => {
@@ -124,7 +124,7 @@ function startInit() {
  * Init TARS
  * @param  {Object} options Options of init
  */
-export default function init(options) {
+export default function init(options = {}) {
     const cwd = process.cwd();
 
     commandOptions = options;
@@ -149,4 +149,4 @@ export default function init(options) {
             startInit();
         }
     });
-};
+}

@@ -1,5 +1,3 @@
-
-
 import inquirer from 'inquirer';
 import tarsUtils from '../utils';
 import { ADD_COMPONENT } from '../constants';
@@ -32,4 +30,4 @@ export default function addComponentPromt(callback) {
             return callback(addComponentAnswers);
         }
     });
-};
+}

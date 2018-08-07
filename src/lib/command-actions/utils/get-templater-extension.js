@@ -1,7 +1,6 @@
-
-
 /**
  * Set templates extension
+ * @param {string} templater Templater
  * @return {string} Templater extension
  */
 export default function getTemplaterExtension(templater) {
@@ -15,4 +14,4 @@ export default function getTemplaterExtension(templater) {
         default:
             return 'pug';
     }
-};
+}

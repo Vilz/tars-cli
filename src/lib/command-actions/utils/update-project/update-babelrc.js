@@ -1,4 +1,3 @@
-import path from 'path';
 import fs from 'fs';
 import tarsUtils from '../../../utils';
 import { execSync } from 'child_process';
