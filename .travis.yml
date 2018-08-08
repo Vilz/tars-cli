@@ -25,7 +25,13 @@ before_install:
 before_script:
   - if [ ${NODE_VERSION} = "6" ]; then npm install -g npm; fi
   - npm -v
-  - 'npm install -g https://github.com/tars/tars-cli/archive/${TRAVIS_COMMIT}.tar.gz'
+  - wget https://github.com/tars/tars-cli/archive/${TRAVIS_COMMIT}.tar.gz -O tars.tar.gz
+  - tar -xzf ./tars.tar.gz
+  - cd tars-cli-${TRAVIS_COMMIT}
+  - npm i
+  - npm run build
+  - npm link
+  - cd ..
 
 script:
   - tars --version

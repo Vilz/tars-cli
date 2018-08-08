@@ -26,10 +26,16 @@
 
   install:
     - ps: Install-Product node $env:nodejs_version $env:platform
-    - node --version
+    - node -v
     - npm install -g npm
-    - npm --version
-    - 'npm install -g git://github.com/tars/tars-cli.git#%APPVEYOR_REPO_COMMIT%'
+    - npm -v
+    - wget https://github.com/tars/tars-cli/archive/%APPVEYOR_REPO_COMMIT%.tar.gz -O tars.tar.gz
+    - tar -xzf ./tars.tar.gz
+    - cd tars-cli-%APPVEYOR_REPO_COMMIT%
+    - npm i
+    - npm run build
+    - npm link
+    - cd ..
 
   build: off
 

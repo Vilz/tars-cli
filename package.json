@@ -2,8 +2,7 @@
   "name": "tars-cli",
   "version": "2.0.0-pre.1",
   "engines": {
-    "npm": ">=3.0.0",
-    "node": ">=6.0.0"
+    "node": "^6.x.x"
   },
   "os": [
     "darwin",
