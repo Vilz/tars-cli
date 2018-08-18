@@ -46,7 +46,7 @@ If you get a **Permission denied** or **Error: EACCES** error, you should run th
 Initialize your first project with:
 
 ```bash
-tars init
+tars init -s https://github.com/SergeShkurko/tars/archive/next.zip
 ```
 
 ## TARS-CLI commands

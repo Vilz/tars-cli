@@ -1,0 +1,13 @@
+{
+    "presets": [
+        ["@babel/preset-env", {
+            "targets": {
+                "node": "6.0.0"
+            }
+        }]
+    ],
+    "plugins": [
+        "babel-plugin-dynamic-import-node",
+        "@babel/plugin-proposal-class-properties"
+    ]
+}

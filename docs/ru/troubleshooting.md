@@ -54,7 +54,7 @@ sudo npm i -g tars-cli
 ```javascript
 // clean.js
 
-'use strict';
+
 
 var gulp = tars.packages.gulp;
 var del = tars.packages.del;
@@ -80,7 +80,7 @@ module.exports = function () {
 };
 
 // remove-init-fs.js
-'use strict';
+
 
 var gulp = tars.packages.gulp;
 var del = tars.packages.del;
@@ -104,7 +104,7 @@ var pathsToDel = [
              './markup/modules/_template/_template.less',
              './markup/modules/_template/_template.styl',
              './markup/modules/_template/_template.html',
-             './markup/modules/_template/_template.jade',
+             './markup/modules/_template/_template.pug',
              './markup/pages/',
              './.tmpTemplater/',
              './.tmpPreproc/'
